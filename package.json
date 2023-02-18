@@ -1,0 +1,10 @@
+{
+  "name": "css-amp",
+  "version": "1.0.0",
+  "description": "Convert Css to valid Amp Css",
+  "main": "index.js",
+  "repository": "https://github.com/enrico-dgr/css-amp.git",
+  "author": "Enrico Di Grazia",
+  "license": "MIT",
+  "private": false
+}

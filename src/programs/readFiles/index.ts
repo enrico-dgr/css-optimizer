@@ -1,4 +1,4 @@
-import { pipe } from 'fp-ts/lib/function'
+import { flow, pipe } from 'fp-ts/lib/function'
 import fs from 'fs'
 import * as E from 'fp-ts/Either'
 
@@ -105,9 +105,16 @@ const iterateThroughGlob = (o: {
     )
   )
 
-// get first base dir
-// starts overriding glob values
-// check each iteration by recursively building the whole path of the file
+const checkStandardPath = (path: string): E.Either<Error, string[]> => {
+  if (!fs.existsSync(path)) {
+    return E.left(new Error('File does not exist: ' + path))
+  } else if (fs.lstatSync(path).isFile()) {
+    return E.right([path])
+  } else {
+    return E.left(new Error('Path does not correspond to a file: ' + path))
+  }
+}
+
 const queryPathAll = (globPath: string): E.Either<Error, string[]> =>
   pipe(
     {
@@ -118,7 +125,20 @@ const queryPathAll = (globPath: string): E.Either<Error, string[]> =>
       indexOfFirstGlob: splittedPath.findIndex((v) => v.includes('*')),
     }),
     (o) =>
-      o.indexOfFirstGlob < 0 ? E.right([globPath]) : iterateThroughGlob(o)
+      o.indexOfFirstGlob < 0
+        ? checkStandardPath(globPath)
+        : iterateThroughGlob(o)
   )
 
-export default () => {}
+export default flow(
+  queryPathAll,
+  E.map((paths) => paths.map((path) => {
+    const file = fs.readFileSync(path);
+    const splittedPath = path.split('/');
+
+    return ({
+      name: splittedPath[splittedPath.length - 1],
+      content: file.toString()
+    })
+  }))
+)

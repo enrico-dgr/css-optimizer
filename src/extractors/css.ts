@@ -39,4 +39,18 @@ const getClasses = buildExtractor({
   converter: cssToClasses,
 })
 
-export { getClasses }
+const cssToSelectors = (css: string): string[] => {
+  // Match everything between "}" and "{", with no "{", "}", "@" or "/",
+  // where the last one is for comments
+  const matches = css.match(/\}[^\{\}@\/]*\{/g) ?? []
+
+  const mapMatch = (m: string) => m.replace(/[\{\}]/g, '').split(',')
+
+  return matches.flatMap(mapMatch)
+}
+
+const getAllSelectors = buildExtractor({
+  converter: cssToSelectors,
+})
+
+export { getClasses, getAllSelectors }

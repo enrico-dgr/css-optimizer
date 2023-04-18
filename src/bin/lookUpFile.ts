@@ -30,7 +30,8 @@ const findStartingWith = (
   dirAbsolutePath: string,
   fileRelativePath: string
 ): ResearchResult => {
-  const file = path.join(dirAbsolutePath, fileRelativePath)
+  const file = path.join(dirAbsolutePath, fileRelativePath);
+
   try {
     fs.statSync(file)
 
@@ -113,6 +114,7 @@ const findConfigsFile = (fileRelativePath: string): ParsingResult => {
         fileResearchResult.defaultFilePath,
         JSON.stringify(defaultConfigs)
       )
+
       res = {
         type: 'valid',
         json: defaultConfigs,

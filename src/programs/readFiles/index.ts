@@ -107,7 +107,7 @@ const iterateThroughGlob = (o: {
 
 const checkStandardPath = (path: string): E.Either<Error, string[]> => {
   if (!fs.existsSync(path)) {
-    return E.left(new Error('File does not exist: ' + path))
+    return E.left(new Error(`File does not exist: "${path}"`))
   } else if (fs.lstatSync(path).isFile()) {
     return E.right([path])
   } else {

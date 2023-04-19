@@ -399,6 +399,11 @@ iconv-lite@0.6.3:
   dependencies:
     safer-buffer ">= 2.1.2 < 3.0.0"
 
+io-ts@^2.2.20:
+  version "2.2.20"
+  resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-2.2.20.tgz#be42b75f6668a2c44f706f72ee6e4c906777c7f5"
+  integrity sha512-Rq2BsYmtwS5vVttie4rqrOCIfHCS9TgpRLFpKQCM1wZBBRY9nWVGmEvm2FnDbSE2un1UE39DvFpTR5UL47YDcA==
+
 is-potential-custom-element-name@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/is-potential-custom-element-name/-/is-potential-custom-element-name-1.0.1.tgz#171ed6f19e3ac554394edf78caa05784a45bebb5"

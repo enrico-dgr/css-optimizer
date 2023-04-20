@@ -11,10 +11,12 @@
   "typings": "src/index.ts",
   "bin": {
     "css-amp": "src/bin/css-amp.ts",
-    "optimizeCss": "src/bin/optimizeCss.ts"
+    "optimizeCss": "src/bin/optimizeCss.ts",
+    "argvTest": "src/bin/argvTest.ts"
   },
   "scripts": {
     "optimize": "ts-node ./src/bin/optimizeCss.ts",
+    "argvTest": "ts-node ./src/bin/argvTest.ts --var1=value1",
     "build": "tsc"
   },
   "files": [

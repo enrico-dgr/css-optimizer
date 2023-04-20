@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { defaultConfigs } from './constants'
+// import { defaultConfigs } from './constants'
 import { Configs } from '../types/configs'
 
 type ResearchResult =
@@ -10,7 +10,6 @@ type ResearchResult =
     }
   | {
       type: 'unavailable'
-      defaultFilePath: string
     }
   | {
       type: 'no-module'
@@ -30,7 +29,7 @@ const findStartingWith = (
   dirAbsolutePath: string,
   fileRelativePath: string
 ): ResearchResult => {
-  const file = path.join(dirAbsolutePath, fileRelativePath);
+  const file = path.join(dirAbsolutePath, fileRelativePath)
 
   try {
     fs.statSync(file)
@@ -46,7 +45,6 @@ const findStartingWith = (
     } else {
       return {
         type: 'unavailable',
-        defaultFilePath: file,
       }
     }
   }
@@ -97,9 +95,12 @@ const parse = (content: string): ParsingResult => {
 }
 
 const findConfigsFile = (fileRelativePath: string): ParsingResult => {
+  // const defaultPath = path.join(process.cwd(), 'css-optimizer')
+  // const defaultFileName = 'optimizeCss.configs.json'
+
   let res: ParsingResult = {
     type: 'invalid',
-    errMsg: 'Error while looking for configs file.',
+    errMsg: `Could not find file by path "${fileRelativePath}"`,
   }
 
   const fileResearchResult = findFileAbsolutePath(fileRelativePath)
@@ -110,15 +111,18 @@ const findConfigsFile = (fileRelativePath: string): ParsingResult => {
       res = parse(fileContent)
       break
     case 'unavailable':
-      fs.writeFileSync(
-        fileResearchResult.defaultFilePath,
-        JSON.stringify(defaultConfigs)
-      )
+      // Commented to return error if configs' file has not been found
+      // fs.mkdirSync(defaultPath, { recursive: true })
 
-      res = {
-        type: 'valid',
-        json: defaultConfigs,
-      }
+      // fs.writeFileSync(
+      //   path.join(defaultPath, defaultFileName),
+      //   JSON.stringify(defaultConfigs, null, '\t')
+      // )
+
+      // res = {
+      //   type: 'valid',
+      //   json: defaultConfigs,
+      // }
       break
   }
 

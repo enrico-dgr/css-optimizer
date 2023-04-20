@@ -7,24 +7,31 @@ import { findConfigsFile } from './lookUpFile'
 import { Configs } from '../types/configs'
 import { formatErrors } from '../utils/reporter'
 import logger from '../utils/logger'
+import processArgsToObj from '../programs/processArgsToObj'
+import { ProcessArgs } from '../types/processArgs'
 
 pipe(
-  findConfigsFile('fixtures/optimizeCss.configs.json'),
-  (configs) =>
-    configs.type === 'valid' ? E.right(configs.json) : E.left(configs.errMsg),
+  processArgsToObj(),
+  ProcessArgs.decode,
+  E.mapLeft(formatErrors),
+  E.map((args) => findConfigsFile(args.c || 'fixtures/optimizeCss.configs.json')),
+  E.chain((configs) =>
+    configs.type === 'valid' ? E.right(configs.json) : E.left(configs.errMsg)
+  ),
   E.chain((configs) =>
     pipe(
       Configs.props.optimizeCss.decode(configs.optimizeCss),
       E.mapLeft(formatErrors)
     )
   ),
-  E.mapLeft(msg => new Error(msg)),
+  E.mapLeft((msg) => new Error(msg)),
   E.chain(optimizeCss),
   E.match(
-    e => {
-      const stack = e.stack?.replace(/^[^\n]*\n/,'') ?? '';
+    (e) => {
+      const stack = e.stack?.replace(/^[^\n]*\n/, '') ?? ''
 
-      logger.error(`Error: ${e.message}`, `\n${stack}`)},
+      logger.error(`Error: ${e.message}`, `\n${stack}`)
+    },
     () => {}
   )
 )

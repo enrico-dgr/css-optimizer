@@ -1,5 +1,3 @@
-// import through2, { TransformFunction } from 'through2'
-// import Vinyl, { isVinyl } from 'vinyl'
 import { getAllSelectors } from '../../extractors/css'
 import { pipe, flow } from 'fp-ts/function'
 import * as E from 'fp-ts/Either'
@@ -8,6 +6,9 @@ import fs from 'fs'
 import readFiles from '../readFiles'
 import path from 'path'
 import { Configs } from '../../types/configs'
+import { removeExt } from '../../utils/files'
+// import through2, { TransformFunction } from 'through2'
+// import Vinyl, { isVinyl } from 'vinyl'
 
 // type DepsFindIn = {
 //   html: {
@@ -93,9 +94,11 @@ const getSelectorsFromCss: (file: {
 
 // export const cssOptimization = flow(transformFunction, through2.obj)
 
+type SelectorStats = { value: string; used: boolean, msg: string };
+
 const addSelectorsUsage = (o: {
   cssFiles: {
-    selectors: { value: string; used: boolean }[]
+    selectors: SelectorStats[]
     content: string
     name: string
   }[]
@@ -107,14 +110,17 @@ const addSelectorsUsage = (o: {
 
   o.cssFiles.forEach((cssFile) => {
     cssFile.selectors.forEach((s) => {
-      const matches = domFragments.map((fragment) =>
-        fragment.querySelector(s.value)
-      )
 
-      for (const match of matches) {
-        if (match) {
-          s.used = true
-          break
+      for (const frag of domFragments) {
+        try {
+          if (frag.querySelector(s.value)) {
+            s.used = true;
+            break;
+          }
+        } catch (error) {
+          const err = error as Error;
+
+          s.msg = err.message;
         }
       }
     })
@@ -141,7 +147,7 @@ export default (deps: Configs['optimizeCss']) =>
           },
           (file) => ({
             ...file,
-            selectors: file.selectors.map((s) => ({ value: s, used: false })),
+            selectors: file.selectors.map((s) => ({ value: s, used: false, msg: '' })),
           })
         )
       ),
@@ -152,10 +158,22 @@ export default (deps: Configs['optimizeCss']) =>
         o.cssFiles.forEach((file) => {
           const unused = file.selectors
             .filter((s) => !s.used)
-            .map((s) => s.value)
+            .map((s) => {
+              const toPrint: Partial<SelectorStats> = {
+                value: s.value,
+              }
+
+              if (s.msg) {
+                toPrint.msg = s.msg;
+              }
+
+              return toPrint;
+            })
+
+          const fileName = removeExt(file.name);
 
           fs.writeFileSync(
-            path.join(deps.outputs.stats, file.name, '.unused-selectors.json'),
+            path.join(deps.outputs.stats, fileName + '.unused-selectors.json'),
             JSON.stringify(unused)
           )
         })

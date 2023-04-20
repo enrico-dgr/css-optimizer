@@ -4,9 +4,10 @@ import * as E from 'fp-ts/Either'
 import { findConfigsFile } from './lookUpFile'
 import { Configs } from '../types/configs'
 import { formatErrors } from '../utils/reporter'
+import logger from '../utils/logger'
 
 pipe(
-  findConfigsFile('optimizeCss.configs.json'),
+  findConfigsFile('fixtures/optimizeCss.configs.json'),
   (configs) =>
     configs.type === 'valid' ? E.right(configs.json) : E.left(configs.errMsg),
   E.chain((configs) =>
@@ -21,7 +22,7 @@ pipe(
     e => {
       const stack = e.stack?.replace(/^[^\n]*\n/,'') ?? '';
 
-      console.error('\x1b[31m%s\x1b[0m', `Error: ${e.message}`, `\n${stack}`)},
+      logger.error(`Error: ${e.message}`, `\n${stack}`)},
     () => {}
   )
 )

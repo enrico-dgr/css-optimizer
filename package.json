@@ -1,17 +1,17 @@
 {
-  "name": "css-amp",
+  "name": "@enrico-dgr/css-optimizer",
   "version": "1.0.0",
-  "description": "Convert Css to valid Amp Css",
+  "description": "Optimize Css",
   "repository": "https://github.com/enrico-dgr/css-amp.git",
   "author": "Enrico Di Grazia",
   "license": "MIT",
   "private": false,
-  "main": "lib/index.js",
-  "module": "es6/index.js",
-  "typings": "lib/index.d.ts",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "typings": "src/index.ts",
   "bin": {
-    "css-amp": "bin/css-amp.js",
-    "optimizeCss": "bin/optimizeCss.js"
+    "css-amp": "src/bin/css-amp.ts",
+    "optimizeCss": "src/bin/optimizeCss.ts"
   },
   "scripts": {
     "optimize": "ts-node ./src/bin/optimizeCss.ts",

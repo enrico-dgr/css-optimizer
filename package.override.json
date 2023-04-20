@@ -1,0 +1,9 @@
+{
+  "main": "lib/index.js",
+  "module": "es6/index.js",
+  "typings": "lib/index.d.ts",
+  "bin": {
+    "css-amp": "bin/css-amp.js",
+    "optimizeCss": "bin/optimizeCss.js"
+  }
+}

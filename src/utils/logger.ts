@@ -13,6 +13,12 @@ const logger = {
   infoStrong: (...args: any) => console.log('\x1b[35m%s\x1b[0m', ...args),
   // cyan
   infoWeak: (...args: any) => console.log('\x1b[36m%s\x1b[0m', ...args),
+  onLeft: (e: Error) => {
+    // Remove first line
+    const stack = e.stack?.replace(/^[^\n]*\n/, '') ?? ''
+
+    logger.error(`Error: ${e.message}`, `\n${stack}`)
+  }
 }
 
 export default logger;

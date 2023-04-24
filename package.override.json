@@ -3,7 +3,8 @@
   "module": "es6/index.js",
   "typings": "lib/index.d.ts",
   "bin": {
-    "css-amp": "bin/css-amp.js",
-    "optimizeCss": "bin/optimizeCss.js"
-  }
+    "css-amp": "lib/bin/css-amp.js",
+    "optimizeCss": "lib/bin/optimizeCss.js"
+  },
+  "scripts": {}
 }

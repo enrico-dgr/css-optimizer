@@ -27,11 +27,7 @@ pipe(
   E.mapLeft((msg) => new Error(msg)),
   E.chain(optimizeCss),
   E.match(
-    (e) => {
-      const stack = e.stack?.replace(/^[^\n]*\n/, '') ?? ''
-
-      logger.error(`Error: ${e.message}`, `\n${stack}`)
-    },
+    logger.onLeft,
     () => {}
   )
 )

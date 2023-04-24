@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@enrico-dgr/css-optimizer": "./.."
+    "@enrico-dgr/css-optimizer": "./../dist"
   },
   "devDependencies": {
     "ts-node": "^10.9.1",

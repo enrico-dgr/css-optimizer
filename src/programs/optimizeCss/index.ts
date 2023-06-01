@@ -203,6 +203,39 @@ export const setSelectorsUsage = (o: {
   return o
 }
 
+export const removeUnusedSelectors = (cssFile: CssFileInfo): CssFileInfo => {
+  const escapeSelectorChars = (str: string) =>
+    str
+      .split('')
+      .map((v) => (/[\.\[\]]/.test(v) ? `\\${v}` : v))
+      .join('')
+
+  cssFile.selectors
+    .filter((s) => !s.used)
+    .forEach((s) => {
+      const escaped = escapeSelectorChars(s.value)
+
+      const regexps: Record<string, RegExp> = {
+        beforeCommas: new RegExp(`(?<=\\}|\\{)${escaped},`, 'g'),
+        betweenCommas: new RegExp(`(?<=,)${escaped},`, 'g'),
+        afterCommas: new RegExp(`,${escaped}(?=\\{)`, 'g'),
+        noCommas: new RegExp(`(?<=\\}|\\{)${escaped}\\{[^\\}]*\\{`, 'g'),
+      }
+
+      for (const key in regexps) {
+        if (Object.prototype.hasOwnProperty.call(regexps, key)) {
+          // Remove
+          cssFile.content = cssFile.content.replace(regexps[key], '')
+        }
+      }
+    })
+
+  // Remove empty media
+  cssFile.content = cssFile.content.replace(/@media[^\{\}]*\{\}/g, '')
+
+  return cssFile
+}
+
 export type FileSourcePath = {
   sourceType: 'path'
   paths: string[]
@@ -222,6 +255,7 @@ type Deps = {
 export const cssOptimize = (deps: Deps) =>
   pipe(
     getFilesByPath({ cssPaths: deps.css.paths, htmlPaths: deps.html.paths }),
+    // Retrieve selectors
     E.chain((files) =>
       pipe(
         files.cssFiles,
@@ -252,6 +286,11 @@ export const cssOptimize = (deps: Deps) =>
         })
       )
     ),
-    () => 'generate optimized css files by removing unused selectors',
-    () => 'print stats if requested'
+    // Clean css files from unused selectors
+    E.map((files) =>
+      pipe(files.cssFiles, A.map(removeUnusedSelectors), (cssFiles) => ({
+        ...files,
+        cssFiles,
+      }))
+    ),
   )

@@ -207,7 +207,7 @@ export const removeUnusedSelectors = (cssFile: CssFileInfo): CssFileInfo => {
   const escapeSelectorChars = (str: string) =>
     str
       .split('')
-      .map((v) => (/[\.\[\]]/.test(v) ? `\\${v}` : v))
+      .map((v) => v.replace(/([\.\[\] \>\~\+\*])/, '\\$1'))
       .join('')
 
   cssFile.selectors
@@ -215,19 +215,24 @@ export const removeUnusedSelectors = (cssFile: CssFileInfo): CssFileInfo => {
     .forEach((s) => {
       const escaped = escapeSelectorChars(s.value)
 
-      const regexps: Record<string, RegExp> = {
-        beforeCommas: new RegExp(`(?<=\\}|\\{)${escaped},`, 'g'),
-        betweenCommas: new RegExp(`(?<=,)${escaped},`, 'g'),
-        afterCommas: new RegExp(`,${escaped}(?=\\{)`, 'g'),
-        noCommas: new RegExp(`(?<=\\}|\\{)${escaped}\\{[^\\}]*\\{`, 'g'),
+      try {
+        const regexps: Record<string, RegExp> = {
+          beforeCommas: new RegExp(`(?<=\\}|\\{)${escaped},`, 'g'),
+          betweenCommas: new RegExp(`(?<=,)${escaped},`, 'g'),
+          afterCommas: new RegExp(`,${escaped}(?=\\{)`, 'g'),
+          noCommas: new RegExp(`(?<=\\}|\\{)${escaped}\\{[^\\}]*\\{`, 'g'),
+        }
+  
+        for (const key in regexps) {
+          if (Object.prototype.hasOwnProperty.call(regexps, key)) {
+            // Remove
+            cssFile.content = cssFile.content.replace(regexps[key], '')
+          }
+        }
+      } catch (error) {
+        console.error(error);
       }
 
-      for (const key in regexps) {
-        if (Object.prototype.hasOwnProperty.call(regexps, key)) {
-          // Remove
-          cssFile.content = cssFile.content.replace(regexps[key], '')
-        }
-      }
     })
 
   // Remove empty media
@@ -246,13 +251,13 @@ export type FileSource = FileSourcePath
 type Deps = {
   html: FileSource
   css: FileSource
-  filterHtmlToEachCss: (
+  filterHtmlToEachCss?: (
     currentHtmlFileInfo: FileInfo,
     cssFileInfo: FileInfo
   ) => boolean
 }
 
-export const cssOptimize = (deps: Deps) =>
+export const cssOptimize = ({ filterHtmlToEachCss, ...deps }: Deps) =>
   pipe(
     getFilesByPath({ cssPaths: deps.css.paths, htmlPaths: deps.html.paths }),
     // Retrieve selectors
@@ -271,14 +276,19 @@ export const cssOptimize = (deps: Deps) =>
     E.map((files) =>
       pipe(
         files.cssFiles,
-        A.map(
-          (cssFile) =>
-            setSelectorsUsage({
-              cssFile,
-              htmlFiles: files.htmlFiles.filter((file) =>
-                deps.filterHtmlToEachCss(file, cssFile)
-              ),
-            }).cssFile
+        A.map((cssFile) =>
+          pipe(
+            files.htmlFiles,
+            filterHtmlToEachCss
+              ? A.filter((file) => filterHtmlToEachCss(file, cssFile))
+              : (files) => files,
+            (htmlFiles) =>
+              setSelectorsUsage({
+                cssFile,
+                htmlFiles,
+              }),
+            ({ cssFile }) => cssFile
+          )
         ),
         (cssFiles) => ({
           ...files,
@@ -292,5 +302,5 @@ export const cssOptimize = (deps: Deps) =>
         ...files,
         cssFiles,
       }))
-    ),
+    )
   )

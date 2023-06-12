@@ -1,0 +1,9 @@
+body {
+  background-color: white;
+}.body-class {
+  color: darkgray;
+}.main-content {
+  width: 200px;
+}.main-content p {
+  font-size: 25px;
+}

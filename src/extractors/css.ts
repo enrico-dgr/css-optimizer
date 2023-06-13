@@ -48,12 +48,14 @@ const cssToSelectors = (css: string): string[] => {
     m
       .replace(/[\{\}]/g, '')
       .split(',')
-      .map((s) => s.replace(/(^ | $)/, ''))
+      .map((s) => s.replace(/(^ | $)/g, ''))
 
   const uniqueValue = (s: string, index: number, arr: string[]) =>
     arr.indexOf(s) === index
 
-  return matches.flatMap(mapMatch).filter(uniqueValue)
+  const cleanedSelectors = matches.flatMap(mapMatch);
+
+  return cleanedSelectors.filter(uniqueValue)
 }
 
 const getAllSelectors = buildExtractor({

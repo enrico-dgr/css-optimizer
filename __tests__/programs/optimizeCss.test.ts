@@ -12,11 +12,11 @@ describe('Optimize Css', () => {
   const res = cssOptimize({
     css: {
       sourceType: 'path',
-      paths: [path.join(mocksBasePath, '**', '.*.css')],
+      paths: [path.join(mocksBasePath, '**', '.*\.css')],
     },
     html: {
       sourceType: 'path',
-      paths: [path.join(mocksBasePath, '**', '.*.html')],
+      paths: [path.join(mocksBasePath, '**', '.*\.html')],
     },
     filterHtmlToEachCss: (html, css) => {
       const splitted = path.dirname(css.path).split(path.sep)

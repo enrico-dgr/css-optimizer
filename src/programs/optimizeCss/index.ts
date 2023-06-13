@@ -181,14 +181,14 @@ export const setSelectorsUsage = (o: {
   cssFile: CssFileInfo
   htmlFiles: FileInfo[]
 }) => {
-  const domFragments = o.htmlFiles.map((htmlFile) =>
-    JSDOM.fragment(htmlFile.content)
-  )
+  const doms = o.htmlFiles.map((htmlFile) => new JSDOM(htmlFile.content))
 
   o.cssFile.selectors.forEach((s) => {
-    for (const frag of domFragments) {
+    for (const dom of doms) {
       try {
-        if (frag.querySelector(s.value)) {
+        const el = dom.window.document.querySelector(s.value)
+
+        if (el) {
           s.used = true
           break
         }
@@ -216,17 +216,18 @@ export const removeUnusedSelectors = (cssFile: CssFileInfo): CssFileInfo => {
       const escaped = escapeSelectorChars(s.value)
 
       try {
-        const regexps: Record<string, RegExp> = {
-          beforeCommas: new RegExp(`(?<=\\}|\\{)${escaped},`, 'g'),
-          betweenCommas: new RegExp(`(?<=,)${escaped},`, 'g'),
-          afterCommas: new RegExp(`,${escaped}(?=\\{)`, 'g'),
-          noCommas: new RegExp(`(?<=\\}|\\{)${escaped}\\{[^\\}]*\\{`, 'g'),
+        const regexps: Record<string, string> = {
+          beforeCommas: `(?<=\\}|\\{) *${escaped} *,`,
+          betweenCommas: `(?<=,) *${escaped} *,`,
+          afterCommas: `, *${escaped}(?= *\\{)`,
+          noCommas: `(?<=\\}|\\{) *${escaped} *\\{[^\\}]*\\}`,
         }
 
         for (const key in regexps) {
           if (Object.prototype.hasOwnProperty.call(regexps, key)) {
+            const regex = new RegExp(regexps[key], 'g');
             // Remove
-            cssFile.content = cssFile.content.replace(regexps[key], '')
+            cssFile.content = cssFile.content.replace(regex, '')
           }
         }
       } catch (error) {

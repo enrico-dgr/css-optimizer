@@ -222,7 +222,7 @@ export const removeUnusedSelectors = (cssFile: CssFileInfo): CssFileInfo => {
           afterCommas: new RegExp(`,${escaped}(?=\\{)`, 'g'),
           noCommas: new RegExp(`(?<=\\}|\\{)${escaped}\\{[^\\}]*\\{`, 'g'),
         }
-  
+
         for (const key in regexps) {
           if (Object.prototype.hasOwnProperty.call(regexps, key)) {
             // Remove
@@ -230,9 +230,8 @@ export const removeUnusedSelectors = (cssFile: CssFileInfo): CssFileInfo => {
           }
         }
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
-
     })
 
   // Remove empty media

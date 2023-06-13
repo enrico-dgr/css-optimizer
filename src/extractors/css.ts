@@ -44,9 +44,16 @@ const cssToSelectors = (css: string): string[] => {
   // where the last one is for comments
   const matches = css.match(/\}[^\{\}@\/]*\{/g) ?? []
 
-  const mapMatch = (m: string) => m.replace(/[\{\}]/g, '').split(',')
+  const mapMatch = (m: string) =>
+    m
+      .replace(/[\{\}]/g, '')
+      .split(',')
+      .map((s) => s.replace(/(^ | $)/, ''))
 
-  return matches.flatMap(mapMatch)
+  const uniqueValue = (s: string, index: number, arr: string[]) =>
+    arr.indexOf(s) === index
+
+  return matches.flatMap(mapMatch).filter(uniqueValue)
 }
 
 const getAllSelectors = buildExtractor({

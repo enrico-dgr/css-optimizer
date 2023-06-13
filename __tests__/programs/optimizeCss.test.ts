@@ -12,31 +12,47 @@ describe('Optimize Css', () => {
   const res = cssOptimize({
     css: {
       sourceType: 'path',
-      paths: [path.join(mocksBasePath, '**', '.*\\.css$')],
+      paths: [path.join(mocksBasePath, '**', '.*.css')],
     },
     html: {
       sourceType: 'path',
-      paths: [path.join(mocksBasePath, '**', '.*\\.html$')],
+      paths: [path.join(mocksBasePath, '**', '.*.html')],
     },
-    filterHtmlToEachCss: (html, css) =>
-      html.content.search(path.join(path.dirname(css.path), css.name)) > -1,
+    filterHtmlToEachCss: (html, css) => {
+      const splitted = path.dirname(css.path).split(path.sep)
+      const dirname = splitted[splitted.length - 1]
+      const cssInclusionPath = dirname + '/' + css.name
+      return html.content.search(cssInclusionPath) > -1
+    },
   })
 
-  pipe(
-    res,
-    E.map(files => files.cssFiles),
-    E.map(A.map(
-      cssFile => {
-        const relative = path.relative(mocksBasePath, path.dirname(cssFile.path));
-        const filename = path.basename(cssFile.path).replace(/\.([^\.]*)$/, '.optimized.$1');
+  it('Output', () => {
+    pipe(
+      res,
+      E.map((files) => files.cssFiles),
+      E.map(
+        A.map((cssFile) => {
+          const relative = path.relative(
+            mocksBasePath,
+            path.dirname(cssFile.path)
+          )
+          const filename = path
+            .basename(cssFile.path)
+            .replace(/\.([^\.]*)$/, '.optimized.$1')
 
-        let outputDir = path.resolve(outputBaseDir, relative);
-        fs.mkdirSync(outputDir, { recursive: true });
+          let outputDir = path.resolve(outputBaseDir, relative)
+          fs.mkdirSync(outputDir, { recursive: true })
 
-        outputDir = path.join(outputDir, filename);
+          const outputFilePath = path.join(outputDir, filename)
 
-        fs.writeFileSync(outputDir, cssFile.content);
-      }
-    ))
-  )
+          expect(outputFilePath).toMatch(/css$/)
+
+          const expectedOptimized = fs.readFileSync(outputFilePath, {
+            encoding: 'utf8',
+          })
+          expect(cssFile.content).toBe(expectedOptimized)
+        })
+      )
+    )
+  })
 })

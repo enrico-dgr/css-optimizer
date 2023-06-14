@@ -7,10 +7,12 @@
     "optimizeCss": "lib/bin/optimizeCss.js"
   },
   "scripts": {},
-  "dependencies": {
-    "@enrico-dgr/fp-ts-fs": "^1.0.2",
-    "@enrico-dgr/fp-ts-logger": "^0.1.1",
+  "peerDependencies": {
     "fp-ts": "^2.13.1",
+    "@enrico-dgr/fp-ts-fs": "^1.0.2",
+  },
+  "dependencies": {
+    "@enrico-dgr/fp-ts-logger": "^0.1.1",
     "io-ts": "^2.2.20",
     "jsdom": "^21.1.1"
   }

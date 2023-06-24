@@ -5,6 +5,7 @@ import * as A from 'fp-ts/Array'
 import * as AE from '../../utils/ArrayEither'
 import { JSDOM } from 'jsdom'
 import { FileInfo, readFilesSync } from '@enrico-dgr/fp-ts-fs'
+import { compileHtmlFiles } from '@enrico-dgr/fp-ts-ssi'
 
 const mapSelectors = flow(getAllSelectors, (selectorsRes) =>
   selectorsRes.type === 'success'
@@ -25,7 +26,7 @@ export const getFilesByPath = ({
     readFilesSync({ paths: cssPaths }),
     E.chain((files) =>
       pipe(
-        readFilesSync({ paths: htmlPaths }),
+        compileHtmlFiles({ paths: htmlPaths, params: {} }),
         E.map((htmlFiles) => ({ htmlFiles, cssFiles: files }))
       )
     )
@@ -98,7 +99,7 @@ export const removeUnusedSelectors = (cssFile: CssFileInfo): CssFileInfo => {
 
         for (const key in regexps) {
           if (Object.prototype.hasOwnProperty.call(regexps, key)) {
-            const regex = new RegExp(regexps[key], 'g');
+            const regex = new RegExp(regexps[key], 'g')
             // Remove
             cssFile.content = cssFile.content.replace(regex, '')
           }

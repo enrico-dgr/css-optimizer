@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "description": "Optimize Css",
   "repository": "https://github.com/enrico-dgr/css-optimizer.git",
-  "author": "Enrico Di Grazia",
+  "author": "enrico-dgr <enrico.digrazia98@gmail.com>",
   "license": "MIT",
   "private": false,
   "main": "src/index.ts",
   "module": "src/index.ts",
   "typings": "src/index.ts",
+  "publishConfig": {
+		"access": "public"
+	},
   "bin": {
     "css-amp": "src/bin/css-amp.ts",
     "optimizeCss": "src/bin/optimizeCss.ts",

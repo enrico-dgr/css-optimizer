@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@enrico-dgr/fp-ts-logger": "^0.1.1",
+    "@enrico-dgr/fp-ts-ssi": "^1.0.1",
     "io-ts": "^2.2.20",
     "jsdom": "^21.1.1"
   }

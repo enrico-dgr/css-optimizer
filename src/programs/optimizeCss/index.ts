@@ -6,6 +6,7 @@ import * as AE from '../../utils/ArrayEither'
 import { JSDOM } from 'jsdom'
 import { FileInfo, readFilesSync } from '@enrico-dgr/fp-ts-fs'
 import { compileHtmlFiles } from '@enrico-dgr/fp-ts-ssi'
+import { standardToAmp } from './amp'
 
 const mapSelectors = flow(getAllSelectors, (selectorsRes) =>
   selectorsRes.type === 'success'
@@ -129,6 +130,7 @@ export type HtmlFileSource = FileSource & { ssiParams?: Record<string, string> }
 export type Deps = {
   html: HtmlFileSource
   css: FileSource
+  amp?: boolean
   filterHtmlToEachCss?: (
     currentHtmlFileInfo: FileInfo,
     cssFileInfo: FileInfo
@@ -184,5 +186,14 @@ export const cssOptimize = ({ filterHtmlToEachCss, ...deps }: Deps) =>
         ...files,
         cssFiles,
       }))
+    ),
+    // Amp
+    E.map((files) =>
+      deps.amp
+        ? pipe(files.cssFiles, A.map(standardToAmp), (cssFiles) => ({
+            ...files,
+            cssFiles,
+          }))
+        : files
     )
   )

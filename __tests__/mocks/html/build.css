@@ -5,7 +5,7 @@ body {
 }.main-content, .unused-class ~ div {
   width: 200px;
 }.main-content p, .unused-class div, .unused-class {
-  font-size: 25px;
+  font-size: 25px !important;
 }.unused-class, .unused-class div, .unused-class ~ div {
   background-color: red;
 }.unused-class p {

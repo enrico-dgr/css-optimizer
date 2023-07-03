@@ -1,3 +1,3 @@
-import optimizeCss from './programs/optimizeCss'
+import { cssOptimize, CssFileInfo, Deps } from './programs/optimizeCss'
 
-export { optimizeCss }
+export { cssOptimize, CssFileInfo, Deps }

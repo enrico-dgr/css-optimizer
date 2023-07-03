@@ -1,0 +1,15 @@
+body {
+  background-color: white;
+}.body-class {
+  color: darkgray;
+}.main-content, .unused-class ~ div {
+  width: 200px;
+}.main-content p, .unused-class div, .unused-class {
+  font-size: 25px;
+}.unused-class, .unused-class div, .unused-class ~ div {
+  background-color: red;
+}.unused-class p {
+  font-size: 25px;
+}.block {
+  color: red;
+}

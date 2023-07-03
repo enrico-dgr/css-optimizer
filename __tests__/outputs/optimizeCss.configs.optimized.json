@@ -1,9 +1,0 @@
-{
-  "optimizeCss": {
-    "html": "fixtures/stackoverflow/page.html",
-    "css": "fixtures/stackoverflow/build.css",
-    "outputs": {
-      "stats": "fixtures/stackoverflow"
-    }
-  }
-}

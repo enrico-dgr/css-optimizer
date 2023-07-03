@@ -6,17 +6,21 @@ import path from 'path'
 import { cssOptimize } from '../../src/programs/optimizeCss'
 
 describe('Optimize Css', () => {
-  const mocksBasePath = path.resolve(__dirname, '../mocks')
-  const outputBaseDir = path.resolve(__dirname, '../outputs')
+  const mocksBasePath = path.resolve(__dirname, '..', 'mocks')
+  const outputBaseDir = path.resolve(__dirname, '..', 'outputs')
 
   const res = cssOptimize({
     css: {
       sourceType: 'path',
-      paths: [path.join(mocksBasePath, '**', '.*\.css')],
+      paths: [path.join(mocksBasePath, '**', '.*.css')],
     },
     html: {
       sourceType: 'path',
-      paths: [path.join(mocksBasePath, '**', '.*\.html')],
+      paths: [path.join(mocksBasePath, '**', '.*.html')],
+      ssiParams: {
+        MOCKS: '/__tests__/mocks',
+        MOCKS_SRC: mocksBasePath.split(path.sep).join('/'),
+      },
     },
     filterHtmlToEachCss: (html, css) => {
       const splitted = path.dirname(css.path).split(path.sep)
@@ -29,7 +33,11 @@ describe('Optimize Css', () => {
   it('Output', () => {
     pipe(
       res,
-      E.map((files) => files.cssFiles),
+      E.map((files) => {
+        expect(files.cssFiles.length).toBe(2)
+
+        return files.cssFiles
+      }),
       E.map(
         A.map((cssFile) => {
           const relative = path.relative(

@@ -10,6 +10,7 @@
 		"**/node_modules/*",
 		"dist",
 		"docs",
+		"./src/bin",
 		"**/__tests__",
 	]
 }

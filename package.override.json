@@ -9,7 +9,7 @@
   "scripts": {},
   "peerDependencies": {
     "fp-ts": "^2.13.1",
-    "@enrico-dgr/fp-ts-fs": "^1.0.2",
+    "@enrico-dgr/fp-ts-fs": "^1.0.2"
   },
   "dependencies": {
     "@enrico-dgr/fp-ts-logger": "^0.1.1",

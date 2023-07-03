@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import optimizeCss from '../programs/optimizeCss'
+import { cssOptimize } from '../programs/optimizeCss'
 import { pipe } from 'fp-ts/function'
 import * as E from 'fp-ts/Either'
 import { findConfigsFile } from './lookUpFile'
@@ -25,7 +25,7 @@ pipe(
     )
   ),
   E.mapLeft((msg) => new Error(msg)),
-  E.chain(optimizeCss),
+  E.chain(cssOptimize),
   E.match(
     logger.onLeft,
     () => {}

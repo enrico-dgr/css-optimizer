@@ -18,15 +18,17 @@ type SelectorStats = { value: string; used: boolean; msg: string }
 export const getFilesByPath = ({
   cssPaths,
   htmlPaths,
+  ssiParams,
 }: {
   cssPaths: string[]
   htmlPaths: string[]
+  ssiParams?: Record<string, string>
 }) =>
   pipe(
     readFilesSync({ paths: cssPaths }),
     E.chain((files) =>
       pipe(
-        compileHtmlFiles({ paths: htmlPaths, params: {} }),
+        compileHtmlFiles({ paths: htmlPaths, params: ssiParams ?? {} }),
         E.map((htmlFiles) => ({ htmlFiles, cssFiles: files }))
       )
     )
@@ -122,8 +124,10 @@ export type FileSourcePath = {
 
 export type FileSource = FileSourcePath
 
-type Deps = {
-  html: FileSource
+export type HtmlFileSource = FileSource & { ssiParams?: Record<string, string> }
+
+export type Deps = {
+  html: HtmlFileSource
   css: FileSource
   filterHtmlToEachCss?: (
     currentHtmlFileInfo: FileInfo,
@@ -133,7 +137,11 @@ type Deps = {
 
 export const cssOptimize = ({ filterHtmlToEachCss, ...deps }: Deps) =>
   pipe(
-    getFilesByPath({ cssPaths: deps.css.paths, htmlPaths: deps.html.paths }),
+    getFilesByPath({
+      cssPaths: deps.css.paths,
+      htmlPaths: deps.html.paths,
+      ssiParams: deps.html.ssiParams,
+    }),
     // Retrieve selectors
     E.chain((files) =>
       pipe(
